@@ -24,7 +24,7 @@ class load_data():
 		Y = np.zeros((self.movies, self.users))
 		r = np.zeros((self.movies, self.users))
 
-		# print Y.shape
+		# This code uses indexing from 1, not 0
 		logs = data.split('\n')
 		if not logs[-1]:
 			logs = logs[0:-1]
