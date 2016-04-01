@@ -3,10 +3,30 @@ import sys
 
 class load_data():
 
-	def __init__(self, file, movies, users):
+	def __init__(self, file, movies=0, users=0):
 		self.file = file
 		self.movies = movies
 		self.users = users
+
+	def get_movies_for_indexes(self,idx):
+		try:
+			f = open(self.file, "r")
+		except:
+			print >> sys.stderr, "[ERR] Failed to open file"
+			sys.exit(1)
+		else:
+			data = f.read()
+			f.close()
+
+		logs = data.split('\n')
+		if not logs[-1]:
+			logs = logs[0:-1]
+		logs = [(int(c.split("::")[0]), c.split("::")[1]) for c in logs]
+		logs = dict(logs)
+
+		for i in idx:
+			print logs[i]
+		
 
 	def get_user_movie_mat(self):
 		try:
