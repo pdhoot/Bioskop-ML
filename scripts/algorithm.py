@@ -49,12 +49,12 @@ class algorithm():
 		X=np.reshape(res1[:self.movies*self.features], (self.movies, self.features))
 		theta = np.reshape(res1[self.movies*self.features:], (self.users, self.features))
 
-		pred=X.dot(theta.T);
-		predt=pred*(1-r);
+		pred=X.dot(theta.T)
+		#predt=pred*(1-r);
 
 		# np.savetxt("temp.txt", pred[:, -1])
 
-		return np.argsort(predt,0)[::-1][:20]
+		return (pred,X)
 
 if __name__=="__main__":
 	obj = algorithm(1800, 100, 2001)
