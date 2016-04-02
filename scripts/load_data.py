@@ -1,10 +1,12 @@
 import numpy as np
 import sys
 import MySQLdb
+from ConfigParser import ConfigParser
+from algorithm import algorithm
 
 class load_data():
 
-	def __init__(self, file, movies=0, users=0,ufile,mfile):
+	def __init__(self, file,ufile,mfile ,movies=0, users=0):
 		self.file = file
 		self.movies = movies
 		self.users = users
@@ -68,7 +70,15 @@ class load_data():
 		Y = np.zeros((self.movies, self.users))
 		r = np.zeros((self.movies, self.users))
 
-		db = MySQLdb.connect("localhost","testuser","test123","DB" )
+		cfg = ConfigParser()
+		cfg.read("creds.cfg")
+
+		host = cfg.get("creds", "host")
+		user = cfg.get("creds", "user")
+		passwd = cfg.get("creds", "passwd")
+		db = cfg.get("creds", "db")
+
+		db = MySQLdb.connect(host,user,passwd,db)
 		cursor=db.cursor()
 		sql="SELECT * FROM LOGS_DB"
 		try:
@@ -104,7 +114,7 @@ class load_data():
 		sql=" INSERT INTO PRED_DB(predi) VALUES(%s)"
 
 		for i in range(1,self.movies+1):
-			str1 = ','.join(str(e) for e in pred[i])
+			str1 = ','.join([str(e) for e in pred[i]])
 			cursor.execute(sql,str1)
 			db.commit()
 
@@ -120,7 +130,7 @@ class load_data():
 		sql=" INSERT INTO FEAT_DB(feati) VALUES(%s)"
 
 		for i in range(1,self.movies+1):
-			str1 = ','.join(str(e) for e in X[i])
+			str1 = ','.join(["%.2f" % e for e in X[i]])
 			cursor.execute(sql,str1)
 			db.commit()
 
@@ -143,15 +153,32 @@ class load_data():
 			logs = logs[0:-1]
 		logs = [(int(c.split("::")[0]), int(c.split("::")[1]), int(c.split("::")[2])) for c in logs]
 
-		db = MySQLdb.connect("localhost","testuser","test123","DB" )
+		cfg = ConfigParser()
+		cfg.read("creds.cfg")
+
+		host = cfg.get("creds", "host")
+		user = cfg.get("creds", "user")
+		passwd = cfg.get("creds", "passwd")
+		db = cfg.get("creds", "db")
+
+		db = MySQLdb.connect(host,user,passwd,db)
 		cursor=db.cursor()
 
-		sql=" INSERT INTO LOGS_DB(user,movie,rating) VALUES(%d,%d,%d)"
+		sql='''INSERT INTO LOGS_DB(user,movie,rating) VALUES(%s,%s,%s)'''
+
+		i = 0
+		l = len(logs)
 
 		for x in logs:
 			data=(x[0],x[1],x[2])
 			cursor.execute(sql,data);
 			db.commit()
+			i+=1
+
+			if i%100==0:
+				sys.stdout.write("Percentage completed: %0.2f" % ((float(i)*100)/l))
+				sys.stdout.write("\r")
+				sys.stdout.flush()
 		db.close()
 
 
@@ -168,17 +195,35 @@ class load_data():
 		logs = data.split('\n')
 		if not logs[-1]:
 			logs = logs[0:-1]
-		logs = [(int(c.split("::")[0]), (c.split("::")[1]), int(c.split("::")[2])) ,int(c.split("::")[3])) for c in logs]
+		logs = [(int(c.split("::")[0]), c.split("::")[1], int(c.split("::")[2]) ,int(c.split("::")[3])) for c in logs]
 
-		db = MySQLdb.connect("localhost","testuser","test123","DB" )
+		cfg = ConfigParser()
+		cfg.read("creds.cfg")
+
+		host = cfg.get("creds", "host")
+		user = cfg.get("creds", "user")
+		passwd = cfg.get("creds", "passwd")
+		db = cfg.get("creds", "db")
+
+		db = MySQLdb.connect(host,user,passwd,db)
 		cursor=db.cursor()
 
-		sql=" INSERT INTO USER_DB(id,gender,age,occu) VALUES(%d,%s,%d,%d)"
+		sql=" INSERT INTO USER_DB(id,gender,age,occu) VALUES(%s,%s,%s,%s)"
+
+		i = 0
+		l = len(logs)
 
 		for x in logs:
 			data=(x[0],x[1],x[2],x[3])
 			cursor.execute(sql,data);
 			db.commit()
+
+			i+=1
+
+			if i%100==0:
+				sys.stdout.write("Percentage completed: %0.2f" % ((float(i)*100)/l))
+				sys.stdout.write("\r")
+				sys.stdout.flush()
 		db.close()
 
 
@@ -195,15 +240,25 @@ class load_data():
 		logs = data.split('\n')
 		if not logs[-1]:
 			logs = logs[0:-1]
-		logs = [(int(c.split("::")[0]), (c.split("::")[1]), (c.split("::")[2]))  for c in logs]
+		logs = [(int(c.split("::")[0]), c.split("::")[1], c.split("::")[2])  for c in logs]
 
-		db = MySQLdb.connect("localhost","testuser","test123","DB" )
+		cfg = ConfigParser()
+		cfg.read("creds.cfg")
+
+		host = cfg.get("creds", "host")
+		user = cfg.get("creds", "user")
+		passwd = cfg.get("creds", "passwd")
+		db = cfg.get("creds", "db")
+
+		db = MySQLdb.connect(host,user,passwd,db)
 		cursor=db.cursor()
 
-		sql=" INSERT INTO MOVIE_DB(id,name,genre) VALUES(%d,%s,%s)"
+		sql='''INSERT INTO MOVIE_DB(id,movie,genre) VALUES(%s,%s,%s)'''
 
 		for x in logs:
-			data=(x[0],x[1],x[2])
+			data=(x[0], x[1],x[2])
+			# print "[DBG]", type(x[0]), type(x[1]), type(x[2])
+			# print "[DBG]", sql % data
 			cursor.execute(sql,data);
 			db.commit()
 		db.close()

@@ -1,4 +1,3 @@
-from load_data import load_data
 from numpy.random import standard_normal as randn
 import numpy as np
 from scipy import optimize
@@ -56,51 +55,51 @@ class algorithm():
 
 		return (pred,X)
 
-if __name__=="__main__":
-	obj = algorithm(1800, 100, 2001)
-	lamda=5
-	L = load_data("../dataset/ratings.dat", 3953, 6041)
+# if __name__=="__main__":
+# 	obj = algorithm(1800, 100, 2001)
+# 	lamda=5
+# 	L = load_data("../dataset/ratings.dat", 3953, 6041)
 
-	(Y, r) = L.get_user_movie_mat()
-	Y = Y[0:1800,0:2000]
-	r = r[0:1800, 0:2000]
+# 	(Y, r) = L.get_user_movie_mat()
+# 	Y = Y[0:1800,0:2000]
+# 	r = r[0:1800, 0:2000]
 
-	t1 = np.zeros((1800, 1))
-	t2 = np.zeros((1800, 1))
+# 	t1 = np.zeros((1800, 1))
+# 	t2 = np.zeros((1800, 1))
 
-	t1[1] = 3
-	t1[318] = 5
-	t1[527] = 5 
-	t1[1721] = 5 
-	t1[1475] = 2 
-	t1[1246] = 4.5
-	t1[296] = 4.5 
-	t1[356] = 4.5 
-	t1[1203] = 3.5
-	t1[858] = 5
-	t1[1221] = 4.5
-	t1[1377] = 2
+# 	t1[1] = 3
+# 	t1[318] = 5
+# 	t1[527] = 5 
+# 	t1[1721] = 5 
+# 	t1[1475] = 2 
+# 	t1[1246] = 4.5
+# 	t1[296] = 4.5 
+# 	t1[356] = 4.5 
+# 	t1[1203] = 3.5
+# 	t1[858] = 5
+# 	t1[1221] = 4.5
+# 	t1[1377] = 2
 
-	t2[1] = 1
-	t2[318] = 1
-	t2[527] = 1
-	t2[1721] = 1
-	t2[1475] = 1
-	t2[1246] = 1
-	t2[296] = 1
-	t2[356] = 1
-	t2[1203] = 1
-	t2[858] = 1
-	t2[1221] = 1
-	t2[1377] = 1
+# 	t2[1] = 1
+# 	t2[318] = 1
+# 	t2[527] = 1
+# 	t2[1721] = 1
+# 	t2[1475] = 1
+# 	t2[1246] = 1
+# 	t2[296] = 1
+# 	t2[356] = 1
+# 	t2[1203] = 1
+# 	t2[858] = 1
+# 	t2[1221] = 1
+# 	t2[1377] = 1
 
-	Y = np.concatenate((Y, t1), axis=1)
-	r = np.concatenate((r, t2), axis=1)
+# 	Y = np.concatenate((Y, t1), axis=1)
+# 	r = np.concatenate((r, t2), axis=1)
 
-	# r = r[0:100,0:100]
-	# print obj.normalize(Y, r)
-	print Y.shape
-	print r.shape
-	obj.init_data()
-	l2 = load_data("../dataset/movies.dat")
-	l2.get_movies_for_indexes(obj.predict(Y,r,lamda)[:, -1])
+# 	# r = r[0:100,0:100]
+# 	# print obj.normalize(Y, r)
+# 	print Y.shape
+# 	print r.shape
+# 	obj.init_data()
+# 	l2 = load_data("../dataset/movies.dat")
+# 	l2.get_movies_for_indexes(obj.predict(Y,r,lamda)[:, -1])
