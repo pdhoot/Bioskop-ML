@@ -71,7 +71,7 @@ class load_data():
 		r = np.zeros((self.movies, self.users))
 
 		cfg = ConfigParser()
-		cfg.read("creds.cfg")
+		cfg.read("../config/config.cfg")
 
 		host = cfg.get("creds", "host")
 		user = cfg.get("creds", "user")
@@ -154,7 +154,7 @@ class load_data():
 		logs = [(int(c.split("::")[0]), int(c.split("::")[1]), int(c.split("::")[2])) for c in logs]
 
 		cfg = ConfigParser()
-		cfg.read("creds.cfg")
+		cfg.read("../config/config.cfg")
 
 		host = cfg.get("creds", "host")
 		user = cfg.get("creds", "user")
@@ -165,20 +165,8 @@ class load_data():
 		cursor=db.cursor()
 
 		sql='''INSERT INTO LOGS_DB(user,movie,rating) VALUES(%s,%s,%s)'''
-
-		i = 0
-		l = len(logs)
-
-		for x in logs:
-			data=(x[0],x[1],x[2])
-			cursor.execute(sql,data);
-			db.commit()
-			i+=1
-
-			if i%100==0:
-				sys.stdout.write("Percentage completed: %0.2f" % ((float(i)*100)/l))
-				sys.stdout.write("\r")
-				sys.stdout.flush()
+		cursor.executemany(sql, logs)
+		db.commit()
 		db.close()
 
 
@@ -198,7 +186,7 @@ class load_data():
 		logs = [(int(c.split("::")[0]), c.split("::")[1], int(c.split("::")[2]) ,int(c.split("::")[3])) for c in logs]
 
 		cfg = ConfigParser()
-		cfg.read("creds.cfg")
+		cfg.read("../config/config.cfg")
 
 		host = cfg.get("creds", "host")
 		user = cfg.get("creds", "user")
@@ -213,17 +201,8 @@ class load_data():
 		i = 0
 		l = len(logs)
 
-		for x in logs:
-			data=(x[0],x[1],x[2],x[3])
-			cursor.execute(sql,data);
-			db.commit()
-
-			i+=1
-
-			if i%100==0:
-				sys.stdout.write("Percentage completed: %0.2f" % ((float(i)*100)/l))
-				sys.stdout.write("\r")
-				sys.stdout.flush()
+		cursor.executemany(sql, logs)
+		db.commit()
 		db.close()
 
 
@@ -243,7 +222,7 @@ class load_data():
 		logs = [(int(c.split("::")[0]), c.split("::")[1], c.split("::")[2])  for c in logs]
 
 		cfg = ConfigParser()
-		cfg.read("creds.cfg")
+		cfg.read("../config/config.cfg")
 
 		host = cfg.get("creds", "host")
 		user = cfg.get("creds", "user")
@@ -255,12 +234,8 @@ class load_data():
 
 		sql='''INSERT INTO MOVIE_DB(id,movie,genre) VALUES(%s,%s,%s)'''
 
-		for x in logs:
-			data=(x[0], x[1],x[2])
-			# print "[DBG]", type(x[0]), type(x[1]), type(x[2])
-			# print "[DBG]", sql % data
-			cursor.execute(sql,data);
-			db.commit()
+		cursor.executemany(sql, logs)
+		db.commit()
 		db.close()
 
 
