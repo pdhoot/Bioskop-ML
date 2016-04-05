@@ -98,12 +98,13 @@ class load_data():
 
 		#Predicting
 		obj =algorithm(self.movies,100,self.users)
+		obj.init_data()
 		lamda=5
 		(pred,X)=obj.predict(Y,r,lamda)
-
+		print "Done!"
 
 		#Inserting predictions and fetures in DB
-		sql="DELETE * FROM PRED_DB"
+		sql="DELETE FROM PRED_DB WHERE 1"
 		try:
 			cursor.execute(sql)
 			db.commit()
@@ -111,15 +112,18 @@ class load_data():
 			db.rollback()
 			sys.exit(1)
 
-		sql=" INSERT INTO PRED_DB(predi) VALUES(%s)"
+		sql=" INSERT INTO PRED_DB(prediction) VALUES(%s)"
 
+		slist=[]
 		for i in range(1,self.movies+1):
 			str1 = ','.join([str(e) for e in pred[i]])
-			cursor.execute(sql,str1)
+			slist+=[str1]
+		print "slist prepared"
+		cursor.executemany(sql, slist)
 		db.commit()
 
 
-		sql="DELETE * FROM FEAT_DB"
+		sql="DELETE FROM FEAT_DB WHERE 1"
 		try:
 			cursor.execute(sql)
 			db.commit()
@@ -127,11 +131,14 @@ class load_data():
 			db.rollback()
 			sys.exit(1)
 
-		sql=" INSERT INTO FEAT_DB(feati) VALUES(%s)"
+		sql=" INSERT INTO FEAT_DB(features) VALUES(%s)"
 
+		slist=[]
 		for i in range(1,self.movies+1):
 			str1 = ','.join(["%.2f" % e for e in X[i]])
-			cursor.execute(sql,str1)
+			slist+=[str1]
+		print "slist-2 prepared"
+		cursor.executemany(sql, slist)
 		db.commit()
 
 		db.close()
