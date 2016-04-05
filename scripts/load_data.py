@@ -116,7 +116,7 @@ class load_data():
 		for i in range(1,self.movies+1):
 			str1 = ','.join([str(e) for e in pred[i]])
 			cursor.execute(sql,str1)
-			db.commit()
+		db.commit()
 
 
 		sql="DELETE * FROM FEAT_DB"
@@ -132,7 +132,7 @@ class load_data():
 		for i in range(1,self.movies+1):
 			str1 = ','.join(["%.2f" % e for e in X[i]])
 			cursor.execute(sql,str1)
-			db.commit()
+		db.commit()
 
 		db.close()
 
