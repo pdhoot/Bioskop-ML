@@ -112,14 +112,12 @@ class load_data():
 			db.rollback()
 			sys.exit(1)
 
-		sql=" INSERT INTO PRED_DB(prediction) VALUES(%s)"
+		sql=" INSERT INTO PRED_DB(id, prediction) VALUES(%s, %s)"
 
-		slist=[]
-		for i in range(1,self.movies+1):
-			str1 = ','.join([str(e) for e in pred[i]])
-			slist+=[str1]
-		print "slist prepared"
-		cursor.executemany(sql, slist)
+		for i in range(1,self.movies):
+			str1 = ','.join(["%.2f" % e for e in pred[i]])
+			st = (i, str1)
+			cursor.execute(sql,st)
 		db.commit()
 
 
@@ -131,14 +129,12 @@ class load_data():
 			db.rollback()
 			sys.exit(1)
 
-		sql=" INSERT INTO FEAT_DB(features) VALUES(%s)"
+		sql=" INSERT INTO FEAT_DB(id, features) VALUES(%s, %s)"
 
-		slist=[]
-		for i in range(1,self.movies+1):
+		for i in range(1,self.movies):
 			str1 = ','.join(["%.2f" % e for e in X[i]])
-			slist+=[str1]
-		print "slist-2 prepared"
-		cursor.executemany(sql, slist)
+			st = (i, str1)
+			cursor.execute(sql,st)
 		db.commit()
 
 		db.close()
