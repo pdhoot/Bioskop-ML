@@ -29,7 +29,7 @@ def insert_average_ratings(num_movies):
 		count[r[1]]+=1
 
 	for i in xrange(len(avg_ratings)):
-		if count[i]>0:
+		if count[i]>10:
 			avg_ratings[i] = (1.0*avg_ratings[i])/count[i]
 		else:
 			avg_ratings[i] = -1
