@@ -48,7 +48,7 @@ class algorithm():
 		X=np.reshape(res1[:self.movies*self.features], (self.movies, self.features))
 		theta = np.reshape(res1[self.movies*self.features:], (self.users, self.features))
 
-		pred=X.dot(theta.T)
+		pred=theta.dot(X.T)
 		#predt=pred*(1-r);
 
 		# np.savetxt("temp.txt", pred[:, -1])

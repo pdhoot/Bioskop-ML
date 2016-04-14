@@ -101,6 +101,7 @@ class load_data():
 		obj.init_data()
 		lamda=5
 		(pred,X)=obj.predict(Y,r,lamda)
+		pred = pred*((1-r).T)
 		print "Done!"
 
 		#Inserting predictions and fetures in DB
@@ -114,7 +115,7 @@ class load_data():
 
 		sql=" INSERT INTO PRED_DB(id, prediction) VALUES(%s, %s)"
 
-		for i in range(1,self.movies):
+		for i in range(1,self.users):
 			str1 = ','.join(["%.2f" % e for e in pred[i]])
 			st = (i, str1)
 			cursor.execute(sql,st)
@@ -308,6 +309,57 @@ class load_data():
 
 		d = [(float(x)-float(y))**2 for x, y in zip(r1, r2)]
 		return sum(d)
+	
+	def make_recommendation(self):
+		cfg = ConfigParser()
+		cfg.read("../config/config.cfg")
+
+		host = cfg.get("creds", "host")
+		user = cfg.get("creds", "user")
+		passwd = cfg.get("creds", "passwd")
+		dba = cfg.get("creds", "db")
+
+		db = MySQLdb.connect(host,user,passwd,dba)
+		cursor=db.cursor()
+
+		sql='''SELECT prediction FROM PRED_DB ORDER BY id ASC'''
+
+		cursor.execute(sql)
+		results = cursor.fetchall()
+		results=["0"] + list(results)
+
+		l = len(results)
+		T = 10
+		X = np.zeros((l, T))
+
+		for i in xrange(1, l):
+			x = results[i][0].split(',')
+			x = [float(j) for j in x]
+			y = [(x[j], j) for j in xrange(1, len(x))]
+			y.sort(reverse=True)
+			x = [j for k, j in y]
+			X[i, :] = x[:T]
+
+		sql="DELETE FROM RECO_DB WHERE 1"
+		try:
+			cursor.execute(sql)
+			db.commit()
+		except:
+			db.rollback()
+			sys.exit(1)
+
+		print "[*] Inserting into DB"
+		sql='''INSERT INTO RECO_DB(id, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+		
+		for i in xrange(1,l):
+			t = list(X[i, :])
+			t = [int(j) for j in t]
+			t = [i]+t
+			st = tuple(t)
+			cursor.execute(sql, st)
+
+		db.commit()
+		db.close()	
 
 
 if __name__=="__main__":

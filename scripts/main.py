@@ -7,3 +7,4 @@ l1 = load_data(f1, f2, f3, 3953, 6041)
 
 l1.pred_update()
 l1.find_similar_movies()
+l1.make_recommendation()
