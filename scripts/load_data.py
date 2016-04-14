@@ -241,6 +241,74 @@ class load_data():
 		db.commit()
 		db.close()
 
+	def find_similar_movies(self):
+		cfg = ConfigParser()
+		cfg.read("../config/config.cfg")
+
+		host = cfg.get("creds", "host")
+		user = cfg.get("creds", "user")
+		passwd = cfg.get("creds", "passwd")
+		dba = cfg.get("creds", "db")
+
+		db = MySQLdb.connect(host,user,passwd,dba)
+		cursor=db.cursor()
+
+		sql='''SELECT features FROM FEAT_DB ORDER BY id ASC'''
+
+		cursor.execute(sql)
+		results = cursor.fetchall()
+
+		results=["0"] + list(results)
+
+		l = len(results)
+		T = 10
+		X = np.zeros((l, T))
+
+		print "[*] Finding Similar movies"
+
+		for i in xrange(1, l):
+			x = [(0, 0)]*(l)
+			for j in xrange(1, l):
+				if i==j:
+					continue
+				d = self.find_distance(results, i, j)
+				x[j] = (d, j)
+			x.sort()
+			y = [j for k, j in x]
+			y = y[2:T+2]
+			X[i, :] = y
+
+		sql="DELETE FROM SIM_DB WHERE 1"
+		try:
+			cursor.execute(sql)
+			db.commit()
+		except:
+			db.rollback()
+			sys.exit(1)
+
+		print "[*] Inserting into DB"
+		sql='''INSERT INTO SIM_DB(id, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+		
+		for i in xrange(1,l):
+			t = list(X[i, :])
+			t = [int(j) for j in t]
+			t = [i]+t
+			st = tuple(t)
+			cursor.execute(sql, st)
+
+		db.commit()
+		db.close()
+
+	def find_distance(self, results, i, j):
+		r1 = results[i][0]
+		r1 = r1.split(',')
+
+		r2 = results[j][0]
+		r2 = r2.split(',')
+
+		d = [(float(x)-float(y))**2 for x, y in zip(r1, r2)]
+		return sum(d)
+
 
 if __name__=="__main__":
 	obj = load_data("../dataset/ratings.dat", 4001, 6041)
