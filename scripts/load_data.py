@@ -84,7 +84,7 @@ class load_data():
 		try:
 			cursor.execute(sql);
 			results=cursor.fetchall()
-
+			
 			for row in results:
 				u=row[0]
 				m=row[1]
@@ -93,7 +93,7 @@ class load_data():
 				Y[m][u]=rate
 
 		except:
-			print "Error: unable to fecth data"
+			print "Error: unable to fetch data"
 			sys.exit(1)
 
 		#Predicting
