@@ -359,8 +359,35 @@ class load_data():
 			cursor.execute(sql, st)
 
 		db.commit()
-		db.close()	
+		db.close()
 
+	def valid_count(self):
+		cfg = ConfigParser()
+		cfg.read("../config/config.cfg")
+
+		host = cfg.get("creds", "host")
+		user = cfg.get("creds", "user")
+		passwd = cfg.get("creds", "passwd")
+		dba = cfg.get("creds", "db")
+
+		db = MySQLdb.connect(host,user,passwd,dba)
+		cursor=db.cursor()
+
+		arr = [0]*self.users
+
+		sql='''SELECT COUNT(*) FROM LOGS_DB GROUP BY user'''
+		cursor.execute(sql)
+		r = cursor.fetchall()
+		r = [0]+[min(int(i[0])/5,1) for i in r]
+		
+		print "[*] Update called" 
+		sql='''UPDATE USER_DB SET valid = %s WHERE id = %s'''
+		for i in xrange(1, self.users):
+			t = (r[i], i)
+			cursor.execute(sql, t)		
+
+		db.commit()
+		db.close()
 
 if __name__=="__main__":
 	obj = load_data("../dataset/ratings.dat", 4001, 6041)
