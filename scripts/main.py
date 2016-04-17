@@ -27,7 +27,7 @@ movies = int(r[0][0])
 f1 = "../dataset/ratings.dat"
 f2 = "../dataset/users.dat"
 f3 = "../dataset/movies.dat"
-l1 = load_data(f1, f2, f3, users, movies)
+l1 = load_data(f1, f2, f3, movies+1, users+1)
 
 l1.pred_update()
 l1.find_similar_movies()
