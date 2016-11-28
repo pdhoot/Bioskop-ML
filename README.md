@@ -15,3 +15,9 @@ Bioskop is a Movie Recommendation Engine based on Collaborative Filtering. On th
 5. `cd` into `scripts/` and run `python once.py`
 
 That's it!
+
+
+
+
+
+Copyrights- Punit Suraj Saleel Shiva
